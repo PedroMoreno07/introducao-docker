@@ -13,6 +13,20 @@ model Filmes {
   name String
   director String
   synopsis String
-  gender String
-  releaser Int
+  gender filmesGender
+  releaser String
+  images Json[]
+}
+
+enum filmesGender {
+  ACAO
+  AVENTURA
+  COMEDIA
+  DRAMA
+  FICCAO
+  TERROR
+  ROMANCE
+  FANTASIA
+  MUSICAL
+  DOCUMENTARIO
 }
