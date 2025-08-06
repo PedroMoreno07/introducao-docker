@@ -8,7 +8,13 @@ export class FilmesService {
     constructor(private prisma: PrismaService){}
     
     async create(data: Prisma.FilmesCreateInput){
-        const newFilm = await this.prisma.filmes.create({data})
+        return await this.prisma.filmes.create({data})
     }
+
+    async getAllFilmes(){
+        return await this.prisma.filmes.findMany()
+        
+    }
+    
     
 }

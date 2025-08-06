@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FilmesService } from './filmes.service';
 import { CreateFilmesDTO } from './dto/create-filmes.dto';
 import { CloudinaryService } from './cloudinary.service';
@@ -71,4 +71,22 @@ export class FilmesController {
             images: imageUrls, // Aqui você injeta as URLs para salvar
         });
     }
+    @Get()
+    @ApiOperation({summary: "lista todos os filmes."})
+    @ApiResponse({
+        status: 200,
+        description: 'Lista de filmes retornada com sucesso.',
+      })
+      @ApiResponse({
+        status: 404,
+        description: 'Nenhum filme encontrado.',
+      })
+      @ApiResponse({
+        status: 500,
+        description: 'Erro interno do servidor.',
+      })
+    async getAllFilmes(){
+        return await this.service.getAllFilmes()
+    }
+    
 }
