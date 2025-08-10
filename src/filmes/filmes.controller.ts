@@ -90,6 +90,20 @@ export class FilmesController {
     }
 
     @Get(':id')
+    @ApiOperation({summary: "lista todos um filme por ID."})
+    @ApiResponse({
+        status: 200,
+        description: 'Filme retornado com sucesso.',
+      })
+      @ApiResponse({
+        status: 404,
+        description: 'Nenhum filme encontrado com esse ID.',
+      })
+      @ApiResponse({
+        status: 500,
+        description: 'Erro interno do servidor.',
+      })
+
     async findById(@Param('id') id: string){
         return await this.service.findById(id)
     }
