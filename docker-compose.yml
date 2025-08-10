@@ -18,7 +18,7 @@ services:
     container_name: nest-apii
     env_file: .env
     ports:
-      - ${API_PORT}:${API_PORT}
+      - ${API2_PORT}:${API2_PORT}
     depends_on:
       - postgres
     environment:

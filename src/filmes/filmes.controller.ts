@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FilmesService } from './filmes.service';
 import { CreateFilmesDTO } from './dto/create-filmes.dto';
 import { CloudinaryService } from './cloudinary.service';
@@ -87,6 +87,11 @@ export class FilmesController {
       })
     async getAllFilmes(){
         return await this.service.getAllFilmes()
+    }
+
+    @Get(':id')
+    async findById(@Param('id') id: string){
+        return await this.service.findById(id)
     }
     
 }
