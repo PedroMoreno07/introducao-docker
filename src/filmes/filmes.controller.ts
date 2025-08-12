@@ -90,7 +90,7 @@ export class FilmesController {
     }
 
     @Get(':id')
-    @ApiOperation({summary: "lista todos um filme por ID."})
+    @ApiOperation({summary: "Retorna um filme por ID."})
     @ApiResponse({
         status: 200,
         description: 'Filme retornado com sucesso.',
