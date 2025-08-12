@@ -2,10 +2,12 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateFilmesDTO } from './dto/create-filmes.dto';
 import { Filmes, Prisma } from '@prisma/client';
+import { ImageObject } from './types/image-object';
+import { CloudinaryService } from './cloudinary.service';
 
 @Injectable()
 export class FilmesService {
-    constructor(private prisma: PrismaService){}
+    constructor(private prisma: PrismaService, private cloudinary: CloudinaryService){}
     
     async create(data: Prisma.FilmesCreateInput){
         return await this.prisma.filmes.create({data})
@@ -38,7 +40,7 @@ export class FilmesService {
         return foundFilm
     }
 
-    async update(id: string, data: Prisma.FilmesUpdateInput): Promise<Filmes | null> {
+    async update(id: string, data: Partial<Filmes>, newImages?: Buffer[]): Promise<Filmes | null> {
         const found = await this.prisma.filmes.findUnique({
             where: {id}
         })
@@ -49,15 +51,24 @@ export class FilmesService {
             )
         }
 
-        const update = await this.prisma.filmes.update({
-            where: {id},
-            data
-        })
+        let images = found.images as ImageObject[]
 
-        return update
+        if(newImages && newImages.length > 0) {
+            await Promise.all(images.map(img => this.cloudinary.deleteImage(img.public_id)));
+      // Upload das novas imagens
+            images = await Promise.all(newImages.map(file => this.cloudinary.uploadImage(file)));
+        }
+
+        return this.prisma.filmes.update({
+            where: { id },
+            data: {
+              ...data,
+              ...(newImages ? { images: JSON.parse(JSON.stringify(images)) } : {}),
+            },
+          });
     }
 
-    async delete(id: string): Promise<Filmes | null> {
+    async delete(id: string): Promise<void> {
         const found = await this.prisma.filmes.findUnique({
             where: {id}
         })
@@ -67,10 +78,10 @@ export class FilmesService {
                 `Nenhum Filme encontado com esse ID ${id}`
             )
         }
-        
-        return await this.prisma.filmes.delete({
-            where: {id}
-        })
+
+        const images = found.images as ImageObject[];
+        await Promise.all(images.map(img => this.cloudinary.deleteImage(img.public_id)));
+        await this.prisma.filmes.delete({ where: { id } });
     }
     
 }
