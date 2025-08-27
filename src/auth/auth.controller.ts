@@ -6,7 +6,7 @@ import { UserCreateDTO } from './dto/create-user-dto';
 export class AuthController {
     constructor(private service: AuthService){}
 
-    async create(@Body() data: UserCreateDTO){
-        return this.service.create(data)
+    async register(@Body() data: UserCreateDTO){
+        return this.service.register(data)
     }
 }
