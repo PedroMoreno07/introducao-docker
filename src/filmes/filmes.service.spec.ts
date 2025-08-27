@@ -3,6 +3,7 @@ import { FilmesService } from "./filmes.service"
 import { PrismaService } from "../prisma/prisma.service"
 import { CloudinaryService } from "./cloudinary.service"
 import { filmesGender } from "@prisma/client"
+import { BadRequestException } from "@nestjs/common"
 
 
 const mockPrisma = {
@@ -84,6 +85,13 @@ describe("FilmesService", () => {
 
     })
 
+    it("deve lançar um erro se a lista de filmes estiver vazia", async () => {
+        mockPrisma.filmes.findMany.mockResolvedValue([])
+        await expect(service.getAllFilmes()).rejects.toThrow(BadRequestException)
+        expect(mockPrisma.filmes.findMany).toHaveBeenCalledWith()
+    }
+    )
+
     it("deve retornar um filme por id", async () => {
         const id = "1"
         const filmeMock = {
@@ -102,6 +110,12 @@ describe("FilmesService", () => {
         expect(result).toEqual(filmeMock)
         expect(mockPrisma.filmes.findUnique).toHaveBeenCalledWith({where: {id}})
 
+    })
+
+    it("deve lançar um erro se o filme não for encontrado por id", async () => {
+        mockPrisma.filmes.findUnique.mockResolvedValue(null)
+        await expect(service.findById("1")).rejects.toThrow(BadRequestException)
+        expect(mockPrisma.filmes.findUnique).toHaveBeenCalledWith({where:{id: "1"}})
     })
 
     it("deve atualizar um filme por id", async () => {
@@ -128,6 +142,13 @@ describe("FilmesService", () => {
 
     })
 
+
+    it("deve lançar um erro se o filme não for encontrado para atualizar", async () => {
+        mockPrisma.filmes.findUnique.mockResolvedValue(null)
+        await expect(service.update("1", {})).rejects.toThrow(BadRequestException)
+        expect(mockPrisma.filmes.findUnique).toHaveBeenCalledWith({where:{id: "1"}})
+    })
+
     it("deve deletar um filme por id", async () => {
         const id = "1"
         const filmeMock = {
@@ -150,4 +171,9 @@ describe("FilmesService", () => {
         expect(mockCloudinaryService.deleteImage).toHaveBeenCalledWith("id");
     })
 
+    it("deve lançar um erro se o filme não for encontrado para deletar", async () => {
+        mockPrisma.filmes.findUnique.mockResolvedValue(null)
+        await expect(service.delete("1")).rejects.toThrow(BadRequestException)
+        expect(mockPrisma.filmes.findUnique).toHaveBeenCalledWith({where:{id: "1"}})
+    })
 } )
