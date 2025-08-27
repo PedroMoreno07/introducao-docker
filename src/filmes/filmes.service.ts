@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateFilmesDTO } from './dto/create-filmes.dto';
 import { Filmes, Prisma } from '@prisma/client';
 import { ImageObject } from './types/image-object';
@@ -16,7 +16,7 @@ export class FilmesService {
     async getAllFilmes(){
         const foundFilm = await this.prisma.filmes.findMany()
 
-        if(!foundFilm){
+        if(foundFilm.length === 0){
             throw new BadRequestException(
                 `Nenhum Filme encontrado`
             )
@@ -31,7 +31,7 @@ export class FilmesService {
             where: {id}
         })
 
-        if(!foundFilm){
+        if(foundFilm === null){
             throw new BadRequestException(
                 `Nenhum Filme encontrado com ID ${id}`
             )
@@ -67,6 +67,8 @@ export class FilmesService {
             },
           });
     }
+
+    
 
     async delete(id: string): Promise<void> {
         const found = await this.prisma.filmes.findUnique({
