@@ -6,4 +6,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 export class AuthService {
     constructor(private prisma: PrismaService){}
 
+    async create (data: Prisma.UsersCreateInput){
+        return this.prisma.users.create({data})
+    }
+
+    
 }
