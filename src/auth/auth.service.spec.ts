@@ -1,6 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 
+
+const mockPrisma = {
+  
+
+}
+   
 describe('AuthService', () => {
   let service: AuthService;
 

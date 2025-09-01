@@ -11,7 +11,15 @@ const config = new DocumentBuilder()
     .setTitle('API de Filmes')
     .setDescription('Documentação da API de Filmes com NestJS + Prisma + Swagger')
     .setVersion('1.0')
-    .addTag('filmes') // Tag opcional para categorizar as rotas
+    .addTag('filmes')
+    .addBearerAuth({// Esquema 
+      type: 'http',
+      scheme: 'bearer', // Define o tipo de autenticação como Bearer Token
+      bearerFormat: 'JWT', // Formato do token JWT 
+      name: 'Authorization', // Nome do cabeçalho de autenticação
+      in: 'header', // Localização do cabeçalho de autenticação
+      description: 'Insira o token JWT no formato "Bearer {token}"', 
+    }) // Tag opcional para categorizar as rotas
     .build();
 
     app.useGlobalPipes(
