@@ -8,6 +8,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Users {
+  id String @id @default(uuid())
+  name String
+  email String @unique
+  password String
+  role role[] @default([USER, ADMIN])
+  createdAt DateTime @default(now())
+}
+
 model Filmes {
   id String @id @default(uuid())
   name String
@@ -29,4 +38,9 @@ enum filmesGender {
   FANTASIA
   MUSICAL
   DOCUMENTARIO
+}
+
+enum role {
+  ADMIN
+  USER
 }

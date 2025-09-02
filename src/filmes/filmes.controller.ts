@@ -1,12 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilmesService } from './filmes.service';
 import { CreateFilmesDTO } from './dto/create-filmes.dto';
 import { CloudinaryService } from './cloudinary.service';
 import { File as MulterFile } from 'multer'
 import { BadRequestException } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UpdateFilmesDTO } from './dto/update-filmes';
+import { UserGuard } from '../auth/user.guard';
+import { AdminGuard } from '../auth/admin.guard';
+import { JwtAuthGuard } from '../auth/jwt.guard';
+
+
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @Controller('filmes')
 export class FilmesController {
     constructor( private service:FilmesService, private cloudinary: CloudinaryService ){}
@@ -56,6 +63,7 @@ export class FilmesController {
 
         }
     })
+    @UseGuards(AdminGuard)
     @ApiResponse({status: 201, description: "Filme criado com sucesso."})
     @ApiResponse({status: 400, description: "Dados inválidos fornecidos."})
     @ApiResponse({status: 500, description: "Erro interno do servidor."})
@@ -149,6 +157,7 @@ export class FilmesController {
                     },
                     description: 'Máximo de 3 imagens',
                 }}}})
+    @UseGuards(AdminGuard)
     @ApiResponse({status: 200, description: "Filme atualizado com sucesso."})
     @ApiResponse({status: 400, description: "Dados inválidos fornecidos."})
     @ApiResponse({status: 404, description: "Filme não encontrado."})
@@ -165,18 +174,20 @@ export class FilmesController {
 
     @Delete(':id')
     @ApiOperation({summary: "Deleta um filme por ID."})
+    
     @ApiResponse({
         status: 200,
         description: 'Filme deletado com sucesso.',
       })
-      @ApiResponse({
+    @ApiResponse({
         status: 404,
         description: 'Nenhum filme encontrado com esse ID.',
       })
-      @ApiResponse({
+    @ApiResponse({
         status: 500,
         description: 'Erro interno do servidor.',
       })
+    @UseGuards(AdminGuard)
     async delete(@Param('id') id: string){
         return this.service.delete(id)
     }
